@@ -1,0 +1,122 @@
+
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bodenbelag</title>
+<link rel="manifest" href="manifest.json">
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js');
+  });
+}
+</script>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+  background: #f8f9fa;
+  color: #333;
+}
+.container {
+  max-width: 400px;
+  margin: auto;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+input[type="number"] {
+  width: 100%;
+  padding: 8px;
+  margin: 8px 0;
+}
+button {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  width: 100%;
+  font-size: 16px;
+  border-radius: 4px;
+}
+button:hover {
+  background: #0056b3;
+}
+.result {
+  margin-top: 20px;
+  background: #e9ecef;
+  padding: 10px;
+  border-radius: 4px;
+}
+label {
+  display: block;
+  margin-top: 10px;
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <h2>Bodenbelag</h2>
+
+  <label>Fläche (m²):</label>
+  <input type="number" id="flaeche" placeholder="z.B. 50">
+
+  <label>Keil (lfm):</label>
+  <input type="number" id="keil" placeholder="z.B. 10">
+
+  <label><input type="checkbox" id="risse"> Risse dübeln (pauschal €200)</label>
+  <label><input type="checkbox" id="versiegelung"> Versiegelung (€28/m²)</label>
+
+  <button onclick="berechnen()">Berechnen</button>
+
+  <div class="result" id="ergebnis"></div>
+</div>
+
+<script>
+function berechnen() {
+  const grundierung = 25;
+  const beschichtung = 22;
+  const rissePauschal = 200;
+  const keilPreis = 18;
+  const anfahrt = 150;
+  const entsorgung = 80;
+  const versiegelung = 28;
+
+  let flaeche = parseFloat(document.getElementById('flaeche').value) || 0;
+  let keil = parseFloat(document.getElementById('keil').value) || 0;
+  let risse = document.getElementById('risse').checked;
+  let versiegeln = document.getElementById('versiegelung').checked;
+
+  let summe = 0;
+  let text = '';
+
+  let grundierungSumme = grundierung * flaeche;
+  let beschichtungSumme = beschichtung * flaeche;
+  let keilSumme = keil * keilPreis;
+  let versiegelungSumme = versiegeln ? versiegelung * flaeche : 0;
+  let risseSumme = risse ? rissePauschal : 0;
+
+  summe = grundierungSumme + beschichtungSumme + keilSumme + versiegelungSumme + risseSumme + anfahrt + entsorgung;
+
+  let ust = summe * 0.20;
+  let brutto = summe + ust;
+
+  text += `Grundierung: €${grundierungSumme.toFixed(2)}<br>`;
+  text += `Beschichtung: €${beschichtungSumme.toFixed(2)}<br>`;
+  text += `Keil: €${keilSumme.toFixed(2)}<br>`;
+  if (risse) text += `Risse dübeln: €${risseSumme.toFixed(2)}<br>`;
+  if (versiegeln) text += `Versiegelung: €${versiegelungSumme.toFixed(2)}<br>`;
+  text += `Anfahrtskosten: €${anfahrt.toFixed(2)}<br>`;
+  text += `Entsorgung: €${entsorgung.toFixed(2)}<br>`;
+  text += `<strong>Summe netto: €${summe.toFixed(2)}</strong><br>`;
+  text += `USt (20%): €${ust.toFixed(2)}<br>`;
+  text += `<strong>Summe brutto: €${brutto.toFixed(2)}</strong>`;
+
+  document.getElementById('ergebnis').innerHTML = text;
+}
+</script>
+</body>
+</html>
